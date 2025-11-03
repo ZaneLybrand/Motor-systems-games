@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Motor System: Medial Activating System (MAS)</title>
+  <style>
+    :root {
+      --bg:#f7f7fb;
+      --card:#ffffff;
+      --ink:#1f2937;
+      --muted:#6b7280;
+      --accent:#2563eb;
+      --good:#16a34a;
+      --bad:#dc2626;
+      --border:#e5e7eb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background:var(--bg);
+      color:var(--ink);
+    }
+    .wrap { max-width: 1000px; margin: 0 auto; padding: 24px; }
+    h1 { font-size: clamp(1.6rem, 2.4vw, 2.2rem); margin: 0 0 6px; }
+    h3 { margin: 0 0 8px; }
+    p.lead { color: var(--muted); margin-top: 0; }
+    .grid { display:grid; gap: 16px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+    }
+    .row {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .muted {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.3rem;
+    }
+    .btn {
+      appearance:none;
+      border:1px solid var(--border);
+      background:#fff;
+      padding:8px 12px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-size:0.9rem;
+    }
+    .btn:hover { border-color:#cbd5e1; }
+    .chip {
+      display:inline-block;
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius: 999px;
+      padding:6px 10px;
+      margin:4px;
+      font-size: 0.9rem;
+      cursor:grab;
+      line-height:1.2rem;
+    }
+    .bins {
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap:12px;
+    }
+    .bin, .pool {
+      background:#f9fafb;
+      border:1px dashed #cbd5e1;
+      border-radius: 14px;
+      padding:12px;
+      min-height: 140px;
+    }
+    .bin h4, .pool h4 {
+      margin:0 0 8px;
+      font-size: 1rem;
+      line-height:1.3rem;
+    }
+    .chips { min-height:60px; }
+    .feedback {
+      margin-top: 10px;
+      font-size: 0.95rem;
+    }
+    .good { color: var(--good); }
+    .bad { color: var(--bad); }
+    footer {
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-top: 18px;
+      line-height:1.3rem;
+    }
+/* ---------- custom layout for Activity 2 ---------- */
+
+/* container can scroll horizontally if needed */
+.act2-bins {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(150px, 1fr);
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Motor System: Medial Activating System (MAS)</h1>
+    <p class="lead">Practice the brainstem/medial descending tracts that keep you upright, oriented, and stable.</p>
+  </header>
+
+  <div class="grid">
+
+    <!-- Activity 1 -->
+    <section class="card" id="act1">
+      <div class="row">
+        <h3>1) Sort each tract into what it mainly controls</h3>
+        <div>
+          <button class="btn" id="act1-check">Check</button>
+          <button class="btn" id="act1-reset">Reset</button>
+        </div>
+      </div>
+      <p class="muted">Drag each tract into the best bin.</p>
+      <div class="bins">
+        <div class="pool">
+          <h4>Tract Pool</h4>
+          <div class="chips" id="act1-pool-chips"></div>
+        </div>
+        <div class="bin">
+          <h4>Maintain posture / antigravity</h4>
+          <div class="chips" id="act1-posture-chips"></div>
+        </div>
+        <div class="bin">
+          <h4>Head & neck orientation</h4>
+          <div class="chips" id="act1-headneck-chips"></div>
+        </div>
+        <div class="bin">
+          <h4>Voluntary axial/trunk (cortical)</h4>
+          <div class="chips" id="act1-voluntary-chips"></div>
+        </div>
+      </div>
+      <div class="feedback" id="act1-fb"></div>
+    </section>
+
+    <!-- Activity 2 -->
+    <section class="card" id="act2">
+      <div class="row">
+        <h3>2) Build the profile for each MAS tract</h3>
+        <div>
+          <button class="btn" id="act2-check">Check</button>
+          <button class="btn" id="act2-reset">Reset</button>
+        </div>
+      </div>
+      <p class="muted">Each tract needs 4 facts (origin, termination, function, laterality). Stack them all in.</p>
+      <div class="bins act2-bins">
+        <div class="pool">
+          <h4>Info Pool</h4>
+          <div class="chips" id="act2-pool-chips"></div>
+        </div>
+        <div class="bin">
+          <h4>Anterior Corticospinal</h4>
+          <div class="chips" id="act2-anterior-chips"></div>
+        </div>
+        <div class="bin">
+          <h4>Medial Reticulospinal</h4>
+          <div class="chips" id="act2-retmed-chips"></div>
+        </div>
+        <div class="bin">
+          <h4>Lateral Reticulospinal</h4>
+          <div class="chips" id="act2-retlat-chips"></div>
+        </div>
+        <div class="bin">
+          <h4>Medial Vestibulospinal</h4>
+          <div class="chips" id="act2-vestmed-chips"></div>
+        </div>
+        <div class="bin">
+          <h4>Lateral Vestibulospinal</h4>
+          <div class="chips" id="act2-vestlat-chips"></div>
+        </div>
+        <div class="bin">
+          <h4>Tectospinal</h4>
+          <div class="chips" id="act2-tecto-chips"></div>
+        </div>
+      </div>
+      <div class="feedback" id="act2-fb"></div>
+    </section>
+
+   
+    <!-- Activity 3 -->
+<section class="card" id="act3">
+  <div class="row">
+    <h3>3) Match the clinical sign to the MAS tract</h3>
+    <div>
+      <button class="btn" id="act3-check">Check</button>
+      <button class="btn" id="act3-reset">Reset</button>
+    </div>
+  </div>
+  <p class="muted">
+    Each scenario describes a deficit. Drag it to the <b>MAS tract</b> most likely to cause that deficit.
+  </p>
+  <div class="bins">
+    <div class="pool">
+      <h4>Scenario Pool</h4>
+      <div class="chips" id="act3-pool-chips"></div>
+    </div>
+
+    <div class="bin">
+      <h4>Lateral Vestibulospinal Tract</h4>
+      <p class="muted" style="font-size:0.75rem;margin:2px 0 6px;">Antigravity, balance, ipsilateral extension</p>
+      <div class="chips" id="act3-lvst-chips"></div>
+    </div>
+
+    <div class="bin">
+      <h4>Medial Vestibulospinal / Tectospinal</h4>
+      <p class="muted" style="font-size:0.75rem;margin:2px 0 6px;">Head/neck stabilization and orienting to stimuli</p>
+      <div class="chips" id="act3-mvsttecto-chips"></div>
+    </div>
+
+    <div class="bin">
+      <h4>Anterior Corticospinal Tract</h4>
+      <p class="muted" style="font-size:0.75rem;margin:2px 0 6px;">Voluntary axial / trunk from cortex</p>
+      <div class="chips" id="act3-anticort-chips"></div>
+    </div>
+  </div>
+  <div class="feedback" id="act3-fb"></div>
+</section>
+
+  </div>
+
+  <footer>
+    MAS = posture, balance, head/neck, axial. LAS = distal voluntary.
+  </footer>
+</div>
+
+<script>
+/* ---------- helpers ---------- */
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function makeChip(label, id, from) {
+  const el = document.createElement("span");
+  el.className = "chip";
+  el.textContent = label;
+  el.draggable = true;
+  el.dataset.id = id;
+  el.dataset.from = from;
+  el.addEventListener("dragstart", (e)=>{
+    e.dataTransfer.setData("text/plain", JSON.stringify({ id, from }));
+  });
+  return el;
+}
+
+// unified drop handler that always lets you stack
+function attachDnD(el, key, state, renderFn) {
+  el.addEventListener("dragover", e => e.preventDefault());
+  el.addEventListener("drop", e => {
+    e.preventDefault();
+    const dataStr = e.dataTransfer.getData("text/plain");
+    if (!dataStr) return;
+    const data = JSON.parse(dataStr);
+    const fromKey = data.from;
+    const fromArr = state[fromKey];
+    if (!fromArr) return;
+    const idx = fromArr.findIndex(x => x.id === data.id);
+    if (idx === -1) return;
+    const moved = fromArr.splice(idx, 1)[0];
+    state[key].push(moved);
+    renderFn();
+  });
+}
+
+/* ---------- ACTIVITY 1 ---------- */
+const act1Targets = {
+  posture: ["vestlat","retmed"],
+  headneck: ["vestmed","tecto"],
+  voluntary: ["anterior"]
+};
+
+const act1State = {
+  pool: [],
+  posture: [],
+  headneck: [],
+  voluntary: []
+};
+const act1Fb = document.getElementById("act1-fb");
+
+function act1Init() {
+  const options = [
+    { id:"anterior", label:"Anterior Corticospinal Tract" },
+    { id:"tecto", label:"Tectospinal Tract" },
+    { id:"retmed", label:"Medial Reticulospinal Tract" },
+    { id:"retlat", label:"Lateral Reticulospinal Tract" },
+    { id:"vestmed", label:"Medial Vestibulospinal Tract" },
+    { id:"vestlat", label:"Lateral Vestibulospinal Tract" }
+  ];
+  act1State.pool.length = 0;
+  act1State.posture.length = 0;
+  act1State.headneck.length = 0;
+  act1State.voluntary.length = 0;
+  shuffle(options).forEach(o => act1State.pool.push(o));
+  act1Fb.textContent = "";
+  act1Fb.className = "feedback";
+}
+
+function act1Render() {
+  const pool = document.getElementById("act1-pool-chips");
+  const post = document.getElementById("act1-posture-chips");
+  const head = document.getElementById("act1-headneck-chips");
+  const vol  = document.getElementById("act1-voluntary-chips");
+  [pool,post,head,vol].forEach(el => el.innerHTML = "");
+  act1State.pool.forEach(it => pool.appendChild(makeChip(it.label, it.id, "pool")));
+  act1State.posture.forEach(it => post.appendChild(makeChip(it.label, it.id, "posture")));
+  act1State.headneck.forEach(it => head.appendChild(makeChip(it.label, it.id, "headneck")));
+  act1State.voluntary.forEach(it => vol.appendChild(makeChip(it.label, it.id, "voluntary")));
+}
+
+function act1Check() {
+  function match(binArr, targetIds) {
+    return binArr.map(x=>x.id).sort().join("|") === targetIds.slice().sort().join("|");
+  }
+  const ok1 = match(act1State.posture, act1Targets.posture);
+  const ok2 = match(act1State.headneck, act1Targets.headneck);
+  const ok3 = match(act1State.voluntary, act1Targets.voluntary);
+  if (ok1 && ok2 && ok3) {
+    act1Fb.textContent = "✅ Correct MAS grouping.";
+    act1Fb.className = "feedback good";
+  } else {
+    act1Fb.textContent = "❌ Re-check: vestibulospinal = posture, tectospinal = orienting.";
+    act1Fb.className = "feedback bad";
+  }
+}
+
+/* ---------- ACTIVITY 2 ---------- */
+const act2Facts = [
+  { id:"ant-origin", text:"Origin: primary motor cortex (uncrossed)", to:"anterior" },
+  { id:"ant-term", text:"Terminates: axial/neck LMNs (cervical/upper thoracic)", to:"anterior" },
+  { id:"ant-fx", text:"Fx: voluntary trunk/axial control", to:"anterior" },
+  { id:"ant-lat", text:"Laterality: bilateral (segmental)", to:"anterior" },
+
+  { id:"retmed-origin", text:"Origin: pontine reticular formation", to:"retmed" },
+  { id:"retmed-term", text:"Terminates: trunk & proximal extensor LMNs", to:"retmed" },
+  { id:"retmed-fx", text:"Fx: increase extensor tone to keep you upright", to:"retmed" },
+  { id:"retmed-lat", text:"Laterality: bilateral (ipsi-heavy)", to:"retmed" },
+
+  { id:"retlat-origin", text:"Origin: medullary reticular formation", to:"retlat" },
+  { id:"retlat-term", text:"Terminates: interneurons to reduce extensor tone", to:"retlat" },
+  { id:"retlat-fx", text:"Fx: 'loosen' posture so limbs can move", to:"retlat" },
+  { id:"retlat-lat", text:"Laterality: bilateral (often contra influence)", to:"retlat" },
+
+  { id:"vestmed-origin", text:"Origin: medial vestibular nucleus", to:"vestmed" },
+  { id:"vestmed-term", text:"Terminates: cervical LMNs for neck", to:"vestmed" },
+  { id:"vestmed-fx", text:"Fx: stabilize head/neck to gravity", to:"vestmed" },
+  { id:"vestmed-lat", text:"Laterality: bilateral (cervical)", to:"vestmed" },
+
+  { id:"vestlat-origin", text:"Origin: lateral vestibular (Deiters') nucleus", to:"vestlat" },
+  { id:"vestlat-term", text:"Terminates: LMNs throughout cord to extensors", to:"vestlat" },
+  { id:"vestlat-fx", text:"Fx: maintain upright posture / antigravity", to:"vestlat" },
+  { id:"vestlat-lat", text:"Laterality: ipsilateral (uncrossed)", to:"vestlat" },
+
+  { id:"tecto-origin", text:"Origin: superior colliculus (midbrain)", to:"tecto" },
+  { id:"tecto-term", text:"Terminates: cervical LMNs for neck", to:"tecto" },
+  { id:"tecto-fx", text:"Fx: orient head/neck to visual/auditory stimuli", to:"tecto" },
+  { id:"tecto-lat", text:"Laterality: contralateral (midbrain decussation)", to:"tecto" }
+];
+
+const act2State = {
+  pool: [],
+  anterior: [],
+  retmed: [],
+  retlat: [],
+  vestmed: [],
+  vestlat: [],
+  tecto: []
+};
+
+const act2Fb = document.getElementById("act2-fb");
+
+function act2Init() {
+  act2State.pool.length = 0;
+  act2State.anterior.length = 0;
+  act2State.retmed.length = 0;
+  act2State.retlat.length = 0;
+  act2State.vestmed.length = 0;
+  act2State.vestlat.length = 0;
+  act2State.tecto.length = 0;
+  shuffle(act2Facts).forEach(f => act2State.pool.push(f));
+  act2Fb.textContent = "";
+  act2Fb.className = "feedback";
+}
+
+function act2Render() {
+  const pool = document.getElementById("act2-pool-chips");
+  const ant  = document.getElementById("act2-anterior-chips");
+  const rmed = document.getElementById("act2-retmed-chips");
+  const rlat = document.getElementById("act2-retlat-chips");
+  const vmed = document.getElementById("act2-vestmed-chips");
+  const vlat = document.getElementById("act2-vestlat-chips");
+  const tecto= document.getElementById("act2-tecto-chips");
+  [pool,ant,rmed,rlat,vmed,vlat,tecto].forEach(el => el.innerHTML = "");
+  act2State.pool.forEach(it => pool.appendChild(makeChip(it.text, it.id, "pool")));
+  act2State.anterior.forEach(it => ant.appendChild(makeChip(it.text, it.id, "anterior")));
+  act2State.retmed.forEach(it => rmed.appendChild(makeChip(it.text, it.id, "retmed")));
+  act2State.retlat.forEach(it => rlat.appendChild(makeChip(it.text, it.id, "retlat")));
+  act2State.vestmed.forEach(it => vmed.appendChild(makeChip(it.text, it.id, "vestmed")));
+  act2State.vestlat.forEach(it => vlat.appendChild(makeChip(it.text, it.id, "vestlat")));
+  act2State.tecto.forEach(it => tecto.appendChild(makeChip(it.text, it.id, "tecto")));
+}
+
+function act2Check() {
+  let correct = 0;
+  const total = act2Facts.length;
+  ["anterior","retmed","retlat","vestmed","vestlat","tecto"].forEach(key => {
+    act2State[key].forEach(chip => {
+      if (chip.to === key) correct++;
+    });
+  });
+  if (correct === total) {
+    act2Fb.textContent = "✅ Perfect MAS tract table.";
+    act2Fb.className = "feedback good";
+  } else {
+    act2Fb.textContent = `⚠️ ${correct}/${total} correct — double-check vestibulospinal vs reticulospinal.`;
+    act2Fb.className = "feedback bad";
+  }
+}
+
+/* ---------- ACTIVITY 3 ---------- */
+/* ---------- ACTIVITY 3 (TRACT-BASED) ---------- */
+
+// we now match SCENARIO → TRACT (not scenario → abstract function)
+const act3State = {
+  pool: [],
+  lvst: [],        // lateral vestibulospinal
+  mvsttecto: [],   // medial vestibulospinal / tectospinal
+  anticort: []     // anterior corticospinal
+};
+
+// each scenario points to ONE most-appropriate MAS tract
+// you can add more scenarios later if you like
+const act3Scenarios = [
+  {
+    id: "falling",
+    label: "Keeps falling to one side; stance leg won’t extend to catch balance.",
+    to: "lvst"  // classic lateral vestibulospinal problem
+  },
+  {
+    id: "stiff",
+    label: "Rigid extensor tone, hard to initiate gait.",
+    to: "lvst"  // extensor-bias postural system
+  },
+  {
+    id: "noorient",
+    label: "No automatic head turn toward a sudden sound/visual cue.",
+    to: "mvsttecto"  // head/neck orienting
+  },
+  {
+    id: "trunkweak",
+    label: "Voluntary trunk weakness; distal limb strength OK.",
+    to: "anticort"   // anterior corticospinal
+  }
+];
+
+const act3Fb = document.getElementById("act3-fb");
+
+function act3Init() {
+  // clear all bins
+  act3State.pool.length = 0;
+  act3State.lvst.length = 0;
+  act3State.mvsttecto.length = 0;
+  act3State.anticort.length = 0;
+
+  // shuffle scenarios into pool
+  shuffle(act3Scenarios).forEach(s => act3State.pool.push(s));
+
+  act3Fb.textContent = "";
+  act3Fb.className = "feedback";
+}
+
+function act3Render() {
+  const pool = document.getElementById("act3-pool-chips");
+  const lvst = document.getElementById("act3-lvst-chips");
+  const mvsttecto = document.getElementById("act3-mvsttecto-chips");
+  const anticort = document.getElementById("act3-anticort-chips");
+
+  [pool, lvst, mvsttecto, anticort].forEach(el => el.innerHTML = "");
+
+  act3State.pool.forEach(it => pool.appendChild(makeChip(it.label, it.id, "pool")));
+  act3State.lvst.forEach(it => lvst.appendChild(makeChip(it.label, it.id, "lvst")));
+  act3State.mvsttecto.forEach(it => mvsttecto.appendChild(makeChip(it.label, it.id, "mvsttecto")));
+  act3State.anticort.forEach(it => anticort.appendChild(makeChip(it.label, it.id, "anticort")));
+}
+
+function act3Check() {
+  let correct = 0;
+  const total = act3Scenarios.length;
+
+  // count correct in each bin
+  act3State.lvst.forEach(s => { if (s.to === "lvst") correct++; });
+  act3State.mvsttecto.forEach(s => { if (s.to === "mvsttecto") correct++; });
+  act3State.anticort.forEach(s => { if (s.to === "anticort") correct++; });
+
+  if (correct === total) {
+    act3Fb.textContent = "✅ Nice — you matched deficits to the right MAS tracts.";
+    act3Fb.className = "feedback good";
+  } else {
+    act3Fb.textContent = `❌ ${correct}/${total} correct. Hint: falling = lateral vestibulospinal.`;
+    act3Fb.className = "feedback bad";
+  }
+}
+
+
+/* ---------- render all ---------- */
+function renderAll() {
+  act1Render();
+  act2Render();
+  act3Render();
+}
+
+/* ---------- init ---------- */
+act1Init();
+act2Init();
+act3Init();
+renderAll();
+
+/* ---------- DnD wiring (after init!) ---------- */
+attachDnD(document.getElementById("act1-pool-chips"), "pool", act1State, renderAll);
+attachDnD(document.getElementById("act1-posture-chips"), "posture", act1State, renderAll);
+attachDnD(document.getElementById("act1-headneck-chips"), "headneck", act1State, renderAll);
+attachDnD(document.getElementById("act1-voluntary-chips"), "voluntary", act1State, renderAll);
+
+attachDnD(document.getElementById("act2-pool-chips"), "pool", act2State, renderAll);
+attachDnD(document.getElementById("act2-anterior-chips"), "anterior", act2State, renderAll);
+attachDnD(document.getElementById("act2-retmed-chips"), "retmed", act2State, renderAll);
+attachDnD(document.getElementById("act2-retlat-chips"), "retlat", act2State, renderAll);
+attachDnD(document.getElementById("act2-vestmed-chips"), "vestmed", act2State, renderAll);
+attachDnD(document.getElementById("act2-vestlat-chips"), "vestlat", act2State, renderAll);
+attachDnD(document.getElementById("act2-tecto-chips"), "tecto", act2State, renderAll);
+
+// Activity 3 – new tract-based bins
+attachDnD(document.getElementById("act3-pool-chips"), "pool", act3State, renderAll);
+attachDnD(document.getElementById("act3-lvst-chips"), "lvst", act3State, renderAll);
+attachDnD(document.getElementById("act3-mvsttecto-chips"), "mvsttecto", act3State, renderAll);
+attachDnD(document.getElementById("act3-anticort-chips"), "anticort", act3State, renderAll);
+
+
+/* ---------- buttons ---------- */
+document.getElementById("act1-check").addEventListener("click", act1Check);
+document.getElementById("act1-reset").addEventListener("click", function () {
+  act1Init();
+  renderAll();
+});
+
+document.getElementById("act2-check").addEventListener("click", act2Check);
+document.getElementById("act2-reset").addEventListener("click", function () {
+  act2Init();
+  renderAll();
+});
+
+document.getElementById("act3-check").addEventListener("click", act3Check);
+document.getElementById("act3-reset").addEventListener("click", function () {
+  act3Init();
+  renderAll();
+});
+</script>
+</body>
+</html>
