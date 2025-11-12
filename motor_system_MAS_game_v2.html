@@ -288,7 +288,7 @@ function attachDnD(el, key, state, renderFn) {
 
 /* ---------- ACTIVITY 1 ---------- */
 const act1Targets = {
-  posture: ["vestlat","retmed"],
+  posture: ["vestlat","retmed","retlat"],
   headneck: ["vestmed","tecto"],
   voluntary: ["anterior"]
 };
@@ -342,7 +342,7 @@ function act1Check() {
     act1Fb.textContent = "✅ Correct MAS grouping.";
     act1Fb.className = "feedback good";
   } else {
-    act1Fb.textContent = "❌ Re-check: vestibulospinal = posture, tectospinal = orienting.";
+    act1Fb.textContent = "❌ Re-check: vestibulospinal and reticulospinal tracts = posture/antigravity, tectospinal = head orientation.";
     act1Fb.className = "feedback bad";
   }
 }
@@ -580,3 +580,4 @@ document.getElementById("act3-reset").addEventListener("click", function () {
 </script>
 </body>
 </html>
+
