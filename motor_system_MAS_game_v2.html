@@ -287,11 +287,13 @@ function attachDnD(el, key, state, renderFn) {
 }
 
 /* ---------- ACTIVITY 1 ---------- */
+/* Updated Nov 2025 — revised categories to reflect cortical and brainstem integration */
 const act1Targets = {
-  posture: ["vestlat","retmed","retlat"],
-  headneck: ["vestmed","tecto"],
-  voluntary: ["anterior"]
+  posture: ["vestlat","vestmed"],             // LVST, MVST
+  headneck: ["tecto"],                        // Tectospinal
+  voluntary: ["anterior","retmed","retlat"]   // ACST, MRST, LRST
 };
+
 
 const act1State = {
   pool: [],
@@ -580,4 +582,5 @@ document.getElementById("act3-reset").addEventListener("click", function () {
 </script>
 </body>
 </html>
+
 
