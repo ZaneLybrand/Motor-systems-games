@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Motor System: Medial Activating System (MAS)</title>
+  <style>
+    :root {
+      --bg:#f7f7fb;
+      --card:#ffffff;
+      --ink:#1f2937;
+      --muted:#6b7280;
+      --accent:#2563eb;
+      --good:#16a34a;
+      --bad:#dc2626;
+      --border:#e5e7eb;
+      --selected:#dbeafe;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background:var(--bg);
+      color:var(--ink);
+    }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 24px; }
+    h1 { font-size: clamp(1.6rem, 2.4vw, 2.2rem); margin: 0 0 6px; }
+    h3 { margin: 0 0 8px; }
+    p.lead { color: var(--muted); margin-top: 0; }
+    .grid { display:grid; gap: 16px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+    }
+    .row {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .muted {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.3rem;
+    }
+    .btn {
+      appearance:none;
+      border:1px solid var(--border);
+      background:#fff;
+      padding:8px 12px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-size:0.9rem;
+    }
+    .btn:hover { border-color:#cbd5e1; }
+    .btn:disabled { opacity:0.6; cursor:not-allowed; }
+    .btn.selected-chip {
+      background: var(--selected);
+      border-color: var(--accent);
+    }
+    .chip {
+      display:inline-block;
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius: 999px;
+      padding:6px 10px;
+      margin:4px;
+      font-size: 0.9rem;
+      cursor:grab;
+      line-height:1.2rem;
+      user-select:none;
+    }
+    .chip.selected {
+      background: var(--selected);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(37,99,235,0.12);
+    }
+    .bins {
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap:12px;
+    }
+    .bin, .pool {
+      background:#f9fafb;
+      border:1px dashed #cbd5e1;
+      border-radius: 14px;
+      padding:12px;
+      min-height: 140px;
+    }
+    .bin.click-target {
+      cursor:pointer;
+    }
+    .bin.click-target:hover, .pool.click-target:hover {
+      border-color: var(--accent);
+      background:#f8fbff;
+    }
+    .bin h4, .pool h4 {
+      margin:0 0 8px;
+      font-size: 1rem;
+      line-height:1.3rem;
+    }
+    .chips { min-height:60px; }
+    .feedback {
+      margin-top: 10px;
+      font-size: 0.95rem;
+    }
+    .good { color: var(--good); }
+    .bad { color: var(--bad); }
+    .toolbar { display:flex; gap:8px; flex-wrap:wrap; }
+    .subtle { font-size:0.82rem; color:var(--muted); }
+    footer {
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-top: 18px;
+      line-height:1.3rem;
+    }
+    .wide-bins {
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap:12px;
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Motor System: Medial Activating System (MAS)</h1>
+    <p class="lead">Practice the brainstem and medial descending tracts that keep you upright, oriented, and stable.</p>
+    <p class="subtle">Version 7 • Updated 2026-03-30</p>
+  </header>
+
+  <div class="grid">
+
+    <section class="card" id="act1">
+      <div class="row">
+        <div>
+          <h3>1) Match each tract to its origin</h3>
+          <div class="subtle">Drag and drop, or tap a chip and then tap a destination. Tap a placed chip and then tap the pool to send it back.</div>
+        </div>
+        <div class="toolbar">
+          <button class="btn" id="act1-undo">Undo last move</button>
+          <button class="btn" id="act1-check">Check</button>
+          <button class="btn" id="act1-reset">Reset</button>
+        </div>
+      </div>
+      <p class="muted">Each tract belongs under the nucleus or structure where it originates.</p>
+      <div class="wide-bins">
+        <div class="pool click-target">
+          <h4>Tract Pool</h4>
+          <div class="chips" id="act1-pool-chips"></div>
+        </div>
+        <div class="bin click-target"><h4>Primary Motor Cortex</h4><div class="chips" id="act1-cortex-chips"></div></div>
+        <div class="bin click-target"><h4>Pontine Reticular Formation (Brainstem)</h4><div class="chips" id="act1-pons-chips"></div></div>
+        <div class="bin click-target"><h4>Medullary Reticular Formation (Brainstem)</h4><div class="chips" id="act1-medulla-chips"></div></div>
+        <div class="bin click-target"><h4>Medial Vestibular Nucleus (Brainstem)</h4><div class="chips" id="act1-vestmed-chips"></div></div>
+        <div class="bin click-target"><h4>Lateral Vestibular Nucleus (Brainstem)</h4><div class="chips" id="act1-vestlat-chips"></div></div>
+        <div class="bin click-target"><h4>Superior Colliculus (Midbrain)</h4><div class="chips" id="act1-tecto-chips"></div></div>
+      </div>
+      <div class="feedback" id="act1-fb"></div>
+    </section>
+
+    <section class="card" id="act2">
+      <div class="row">
+        <div>
+          <h3>2) Match each tract to its major termination</h3>
+          <div class="subtle">Use the same drag or tap-to-place system.</div>
+        </div>
+        <div class="toolbar">
+          <button class="btn" id="act2-undo">Undo last move</button>
+          <button class="btn" id="act2-check">Check</button>
+          <button class="btn" id="act2-reset">Reset</button>
+        </div>
+      </div>
+      <p class="muted">Sort each tract by the termination language you use in class.</p>
+      <div class="wide-bins">
+        <div class="pool click-target"><h4>Tract Pool</h4><div class="chips" id="act2-pool-chips"></div></div>
+        <div class="bin click-target"><h4>Cervical and Upper Thoracic Spinal Cord</h4><div class="chips" id="act2-axial-chips"></div></div>
+        <div class="bin click-target"><h4>All Spinal Cord Levels</h4><div class="chips" id="act2-alllevels-chips"></div></div>
+        <div class="bin click-target"><h4>Cervical Spinal Cord</h4><div class="chips" id="act2-cervical-chips"></div></div>
+        <div class="bin click-target"><h4>Entire Spinal Cord (Mainly Lumbar)</h4><div class="chips" id="act2-extensors-chips"></div></div>
+      </div>
+      <div class="feedback" id="act2-fb"></div>
+    </section>
+
+    <section class="card" id="act3">
+  <div class="row">
+    <div>
+      <h3>3) Match each tract to its laterality</h3>
+      <div class="subtle">This one is about pathway sidedness.</div>
+    </div>
+    <div class="toolbar">
+      <button class="btn" id="act3-undo">Undo last move</button>
+      <button class="btn" id="act3-check">Check</button>
+      <button class="btn" id="act3-reset">Reset</button>
+    </div>
+  </div>
+  <p class="muted">Place each tract under the correct laterality.</p>
+  <div class="subtle">Think: Does this tract cross or stay on the same side?</div>
+  <div class="wide-bins">
+    <div class="pool click-target">
+      <h4>Tract Pool</h4>
+      <div class="chips" id="act3-pool-chips"></div>
+    </div>
+
+    <div class="bin click-target">
+      <h4>Ipsilateral</h4>
+      <div class="chips" id="act3-ipsi-chips"></div>
+    </div>
+
+    <div class="bin click-target">
+      <h4>Contralateral</h4>
+      <div class="chips" id="act3-contra-chips"></div>
+    </div>
+  </div>
+  <div class="feedback" id="act3-fb"></div>
+</section>
+
+    <section class="card" id="act4">
+      <div class="row">
+        <div>
+          <h3>4) Match each tract to its main function</h3>
+          <div class="subtle">This separates postural support, orienting, and voluntary axial control.</div>
+        </div>
+        <div class="toolbar">
+          <button class="btn" id="act4-undo">Undo last move</button>
+          <button class="btn" id="act4-check">Check</button>
+          <button class="btn" id="act4-reset">Reset</button>
+        </div>
+      </div>
+      <p class="muted">Match each tract to the main function language you use in class.</p>
+      <div class="wide-bins">
+        <div class="pool click-target"><h4>Tract Pool</h4><div class="chips" id="act4-pool-chips"></div></div>
+        <div class="bin click-target"><h4>LMNs innervate head and neck muscles (voluntary)</h4><div class="chips" id="act4-voluntary-chips"></div></div>
+        <div class="bin click-target"><h4>Supports posture and activates antigravity muscles</h4><div class="chips" id="act4-upright-chips"></div></div>
+        <div class="bin click-target"><h4>Modulates postural flexors and adjusts muscle tone</h4><div class="chips" id="act4-loosen-chips"></div></div>
+        <div class="bin click-target"><h4>Stabilizes head position and facilitates balance</h4><div class="chips" id="act4-stabilize-chips"></div></div>
+        <div class="bin click-target"><h4>Maintains upright posture through extensor muscles</h4><div class="chips" id="act4-antigravity-chips"></div></div>
+        <div class="bin click-target"><h4>Reflexively orients head towards visual/auditory stimuli</h4><div class="chips" id="act4-orient-chips"></div></div>
+      </div>
+      <div class="feedback" id="act4-fb"></div>
+    </section>
+
+    <section class="card" id="act5">
+      <div class="row">
+        <div>
+          <h3>5) Match the clinical sign to the MAS tract</h3>
+          <div class="subtle">Clinical application.</div>
+        </div>
+        <div class="toolbar">
+          <button class="btn" id="act5-undo">Undo last move</button>
+          <button class="btn" id="act5-check">Check</button>
+          <button class="btn" id="act5-reset">Reset</button>
+        </div>
+      </div>
+      <p class="muted">Each scenario describes a likely deficit. Place it under the tract most strongly associated with that problem.</p>
+      <div class="bins">
+        <div class="pool click-target">
+          <h4>Scenario Pool</h4>
+          <div class="chips" id="act5-pool-chips"></div>
+        </div>
+        <div class="bin click-target">
+          <h4>Lateral Vestibulospinal Tract</h4>
+          <p class="muted" style="font-size:0.75rem;margin:2px 0 6px;">Maintains upright posture through extensor muscles</p>
+          <div class="chips" id="act5-lvst-chips"></div>
+        </div>
+        <div class="bin click-target">
+          <h4>Medial Vestibulospinal / Tectospinal</h4>
+          <p class="muted" style="font-size:0.75rem;margin:2px 0 6px;">Stabilizes head position and orients to stimuli</p>
+          <div class="chips" id="act5-mvsttecto-chips"></div>
+        </div>
+        <div class="bin click-target">
+          <h4>Anterior (Medial) Corticospinal Tract</h4>
+          <p class="muted" style="font-size:0.75rem;margin:2px 0 6px;">Voluntary control from primary motor cortex</p>
+          <div class="chips" id="act5-anticort-chips"></div>
+        </div>
+      </div>
+      <div class="feedback" id="act5-fb"></div>
+    </section>
+
+  </div>
+
+  <footer>
+    MAS = posture, balance, head/neck, axial control. You can drag chips or use tap-to-place on touch devices. <span class="subtle">Version 6 • Updated 2026-03-30</span></footer>
+</div>
+
+<script>
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function createMatchingActivity(config) {
+  const state = {};
+  const selected = { key: null, id: null };
+  const history = [];
+  const keys = ['pool', ...config.bins.map(b => b.key)];
+  keys.forEach(k => state[k] = []);
+
+  function makeChip(item, fromKey) {
+    const el = document.createElement('span');
+    el.className = 'chip';
+    if (selected.key === fromKey && selected.id === item.id) el.classList.add('selected');
+    el.textContent = item.label;
+    el.draggable = true;
+    el.dataset.id = item.id;
+    el.dataset.from = fromKey;
+    el.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', JSON.stringify({id:item.id, from:fromKey}));
+    });
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      if (selected.key === fromKey && selected.id === item.id) {
+        selected.key = null;
+        selected.id = null;
+      } else {
+        selected.key = fromKey;
+        selected.id = item.id;
+      }
+      render();
+    });
+    return el;
+  }
+
+  function moveItem(fromKey, toKey, itemId) {
+    if (!state[fromKey] || !state[toKey] || fromKey === toKey) return;
+    const idx = state[fromKey].findIndex(x => x.id === itemId);
+    if (idx === -1) return;
+    const moved = state[fromKey].splice(idx, 1)[0];
+    state[toKey].push(moved);
+    history.push({from: fromKey, to: toKey, id: itemId});
+    selected.key = null;
+    selected.id = null;
+    render();
+  }
+
+  function bindDrop(container, key) {
+    container.addEventListener('dragover', e => e.preventDefault());
+    container.addEventListener('drop', e => {
+      e.preventDefault();
+      const dataStr = e.dataTransfer.getData('text/plain');
+      if (!dataStr) return;
+      const data = JSON.parse(dataStr);
+      moveItem(data.from, key, data.id);
+    });
+    container.addEventListener('click', () => {
+      if (selected.key && selected.id) moveItem(selected.key, key, selected.id);
+    });
+  }
+
+  function init() {
+    keys.forEach(k => state[k].length = 0);
+    shuffle(config.items).forEach(item => state.pool.push({...item}));
+    selected.key = null;
+    selected.id = null;
+    history.length = 0;
+    const fb = document.getElementById(config.feedbackId);
+    fb.textContent = '';
+    fb.className = 'feedback';
+    render();
+  }
+
+  function render() {
+    const poolEl = document.getElementById(config.poolId);
+    poolEl.innerHTML = '';
+    state.pool.forEach(item => poolEl.appendChild(makeChip(item, 'pool')));
+    config.bins.forEach(bin => {
+      const el = document.getElementById(bin.containerId);
+      el.innerHTML = '';
+      state[bin.key].forEach(item => el.appendChild(makeChip(item, bin.key)));
+    });
+    document.getElementById(config.undoId).disabled = history.length === 0;
+  }
+
+  function undo() {
+    const last = history.pop();
+    if (!last) return;
+    const idx = state[last.to].findIndex(x => x.id === last.id);
+    if (idx === -1) return;
+    const moved = state[last.to].splice(idx, 1)[0];
+    state[last.from].push(moved);
+    selected.key = null;
+    selected.id = null;
+    render();
+  }
+
+  function check() {
+    let correct = 0;
+    const total = config.items.length;
+    config.bins.forEach(bin => {
+      state[bin.key].forEach(item => {
+        if (item.to === bin.key) correct++;
+      });
+    });
+    const fb = document.getElementById(config.feedbackId);
+    if (correct === total) {
+      fb.textContent = config.successText;
+      fb.className = 'feedback good';
+    } else {
+      fb.textContent = `${config.partialPrefix}${correct}/${total} correct. ${config.hintText}`;
+      fb.className = 'feedback bad';
+    }
+  }
+
+  bindDrop(document.getElementById(config.poolId), 'pool');
+  config.bins.forEach(bin => bindDrop(document.getElementById(bin.containerId), bin.key));
+  document.getElementById(config.checkId).addEventListener('click', check);
+  document.getElementById(config.resetId).addEventListener('click', init);
+  document.getElementById(config.undoId).addEventListener('click', undo);
+
+  return { init };
+}
+
+const tractItems = [
+  { id:'anterior', label:'Anterior (Medial) Corticospinal Tract' },
+  { id:'retmed', label:'Medial (Pontine) Reticulospinal Tract' },
+  { id:'retlat', label:'Lateral (Medullary) Reticulospinal Tract' },
+  { id:'vestmed', label:'Medial Vestibulospinal Tract' },
+  { id:'vestlat', label:'Lateral Vestibulospinal Tract' },
+  { id:'tecto', label:'Tectospinal Tract' }
+];
+
+const act1 = createMatchingActivity({
+  items: [
+    { ...tractItems[0], to:'cortex' },
+    { ...tractItems[1], to:'pons' },
+    { ...tractItems[2], to:'medulla' },
+    { ...tractItems[3], to:'vestmed' },
+    { ...tractItems[4], to:'vestlat' },
+    { ...tractItems[5], to:'tecto' }
+  ],
+  poolId:'act1-pool-chips', feedbackId:'act1-fb', checkId:'act1-check', resetId:'act1-reset', undoId:'act1-undo',
+  bins:[
+    {key:'cortex', containerId:'act1-cortex-chips'},
+    {key:'pons', containerId:'act1-pons-chips'},
+    {key:'medulla', containerId:'act1-medulla-chips'},
+    {key:'vestmed', containerId:'act1-vestmed-chips'},
+    {key:'vestlat', containerId:'act1-vestlat-chips'},
+    {key:'tecto', containerId:'act1-tecto-chips'}
+  ],
+  successText:'✅ Correct origins using your class language.',
+  partialPrefix:'⚠️ ',
+  hintText:'Remember: anterior corticospinal begins in the Primary Motor Cortex; reticulospinal tracts begin in reticular formation nuclei of the brainstem; vestibulospinal tracts begin in vestibular nuclei; tectospinal begins in the Superior Colliculus.'
+});
+
+const act2 = createMatchingActivity({
+  items: [
+    { ...tractItems[0], to:'axial' },
+    { ...tractItems[1], to:'alllevels' },
+    { ...tractItems[2], to:'alllevels' },
+    { ...tractItems[3], to:'cervical' },
+    { ...tractItems[4], to:'extensors' },
+    { ...tractItems[5], to:'cervical' }
+  ],
+  poolId:'act2-pool-chips', feedbackId:'act2-fb', checkId:'act2-check', resetId:'act2-reset', undoId:'act2-undo',
+  bins:[
+    {key:'axial', containerId:'act2-axial-chips'},
+    {key:'alllevels', containerId:'act2-alllevels-chips'},
+    {key:'cervical', containerId:'act2-cervical-chips'},
+    {key:'extensors', containerId:'act2-extensors-chips'}
+  ],
+  successText:'✅ Correct terminations using your class language.',
+  partialPrefix:'⚠️ ',
+  hintText:'Reticulospinal tracts project to all spinal cord levels. Vestibulospinal and tectospinal emphasize cervical control, while the lateral vestibulospinal tract extends through the cord, mainly lumbar.'
+});
+
+const act3 = createMatchingActivity({
+  items: [
+    { id:'anterior', label:'Anterior (Medial) Corticospinal Tract', to:'ipsi' },
+    { id:'retmed', label:'Medial (Pontine) Reticulospinal Tract', to:'ipsi' },
+    { id:'retlat', label:'Lateral (Medullary) Reticulospinal Tract', to:'contra' },
+    { id:'vestmed', label:'Medial Vestibulospinal Tract', to:'contra' },
+    { id:'vestlat', label:'Lateral Vestibulospinal Tract', to:'ipsi' },
+    { id:'tecto', label:'Tectospinal Tract', to:'contra' }
+  ],
+  poolId:'act3-pool-chips',
+  feedbackId:'act3-fb',
+  checkId:'act3-check',
+  resetId:'act3-reset',
+  undoId:'act3-undo',
+  bins:[
+    { key:'ipsi', containerId:'act3-ipsi-chips' },
+    { key:'contra', containerId:'act3-contra-chips' }
+  ],
+  successText:'✅ Correct laterality using your class language.',
+  partialPrefix:'⚠️ ',
+  hintText:'Anterior corticospinal, medial pontine reticulospinal, and lateral vestibulospinal are ipsilateral. Medial vestibulospinal, lateral medullary reticulospinal, and tectospinal are contralateral.'
+});
+
+const act4 = createMatchingActivity({
+  items: [
+    { ...tractItems[0], to:'voluntary' },
+    { ...tractItems[1], to:'upright' },
+    { ...tractItems[2], to:'loosen' },
+    { ...tractItems[3], to:'stabilize' },
+    { ...tractItems[4], to:'antigravity' },
+    { ...tractItems[5], to:'orient' }
+  ],
+  poolId:'act4-pool-chips', feedbackId:'act4-fb', checkId:'act4-check', resetId:'act4-reset', undoId:'act4-undo',
+  bins:[
+    {key:'voluntary', containerId:'act4-voluntary-chips'},
+    {key:'upright', containerId:'act4-upright-chips'},
+    {key:'loosen', containerId:'act4-loosen-chips'},
+    {key:'stabilize', containerId:'act4-stabilize-chips'},
+    {key:'antigravity', containerId:'act4-antigravity-chips'},
+    {key:'orient', containerId:'act4-orient-chips'}
+  ],
+  successText:'✅ Correct functions using your class language.',
+  partialPrefix:'⚠️ ',
+  hintText:'Think anterior corticospinal for voluntary head and neck motor output, vestibulospinal tracts for balance and posture, reticulospinal tracts for tone and antigravity control, and tectospinal for reflex orienting.'
+});
+
+const act5 = createMatchingActivity({
+  items: [
+    { id:'stance', label:'Cannot maintain upright stance; ipsilateral extensor support is weak during balance correction.', to:'lvst' },
+    { id:'headturn', label:'Does not automatically turn the head toward a sudden sound or visual cue.', to:'mvsttecto' },
+    { id:'trunkweak', label:'Voluntary trunk weakness with relatively preserved distal limb strength.', to:'anticort' },
+    { id:'neckunstable', label:'Head and neck are poorly stabilized when posture shifts unexpectedly.', to:'mvsttecto' }
+  ],
+  poolId:'act5-pool-chips', feedbackId:'act5-fb', checkId:'act5-check', resetId:'act5-reset', undoId:'act5-undo',
+  bins:[
+    {key:'lvst', containerId:'act5-lvst-chips'},
+    {key:'mvsttecto', containerId:'act5-mvsttecto-chips'},
+    {key:'anticort', containerId:'act5-anticort-chips'}
+  ],
+  successText:'✅ Nice — you matched deficits to the right MAS tracts.',
+  partialPrefix:'❌ ',
+  hintText:'Think balance and extension for lateral vestibulospinal, head and neck orienting for medial vestibulospinal/tectospinal, and voluntary trunk control for anterior corticospinal.'
+});
+
+[act1, act2, act3, act4, act5].forEach(a => a.init());
+</script>
+</body>
+</html>
